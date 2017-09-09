@@ -6,7 +6,7 @@ import fnmatch
 def banner():
     print('''
 ----------------------------------
-# Coded By @O*nix #DCLXVI.PRO v1.2
+# Coded By @O*nix v1.3
 ----------------------------------''')
 banner()
 
@@ -39,6 +39,7 @@ if not args.filename or not args.fileresult or not args.searchinfo:
 
 filename = args.filename
 fileresult = args.fileresult
+filetype = args.filetype
 searchinfo = args.searchinfo
 
 message_pars = ('''Парсинг файлов закончен\nУдаляем дубликаты''')
@@ -57,7 +58,7 @@ if filename == ("allfile"):
 
     for d, dirs, files in os.walk('.'):
         for f in files:
-            if f.endswith('.txt'):
+            if f.endswith(filetype):
                 searchdata(f)
 
     closefile = open(fileresult + filetype)
@@ -79,7 +80,15 @@ if filename == ("allfile"):
     sys.exit(0)
 
 else:
-    print ("Ищем по файлу" + " " + filename + filetype)
+    try:
+        file = open(filename + filetype)
+    except IOError as e:
+        print("Файла не существует!")
+        sys.exit(0)
+    else:
+        with file:
+
+            print ("Ищем по файлу" + " " + filename + filetype)
 
     def searchdata(f):
         result = open((fileresult + filetype), 'a')
