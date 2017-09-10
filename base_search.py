@@ -1,24 +1,30 @@
 import os
 import argparse
 import sys
-import fnmatch
 
 def banner():
     print('''
 ----------------------------------
 # Coded By @O*nix v1.3
+# https://github.com/onixdclxvi/PyDCLXVI.git
 ----------------------------------''')
-banner()
 
+banner()
 info = ('''
-Usage: ./base_searche.py [options]
+Usage: ./base_search.py [options]
+____________________________________________
+=== Поиск по файлу или файлам с автоматическим удалением дубликатов ===
+--------------------------------------------
 Options: -f,    --filename   <targetfile> указать -f allfile для поиска по всем файлам директории  |   Имя файла без расширения
          -r,    --fileresult <result_filename>                                                     |   Имя файла для записи результатов
          -t,    --filetype   <type_file>                                                           |   Тип файл например .txt
          -s,    --searchinfo <search_info>                                                         |   Какую информацию искать в строках
+         -d,    --deleteinfo <delete_info>                                                         |   Удалить искомую информацию из файла
          -h,    --help       <help>                                                                |   Справка\n
-Example: ./base_searche.py -f base -r resultfile -s manager <- Поиск по конкретному файлу
-Example: ./base_searche.py -а allfile -r resultfile -s manager <- Поиск по всем файлам в директории
+
+Примеры:         
+Example: ./base_search.py -f base -r resultfile -s manager <- Поиск по конкретному файлу
+Example: ./base_search.py -а allfile -r resultfile -s manager <- Поиск по всем файлам в директории
 ''')
 
 def help():
@@ -45,77 +51,55 @@ searchinfo = args.searchinfo
 message_pars = ('''Парсинг файлов закончен\nУдаляем дубликаты''')
 message_duble = ('''Дубликаты удалены\nРабота завершена''')
 
+# Функция поиска и записи данных в файл резульата
+def searchdata(f):
+    result = open((fileresult + filetype), 'a')
+    files = open(f, 'r').readlines()
+    for i in files:
+        if i.count(searchinfo):
+            result.write(i)
+
 if filename == ("allfile"):
 
     print ('Ищем по всем' + " " + filetype + " " + 'файлам...')
-
-    def searchdata(f):
-        result = open((fileresult + filetype), 'a')
-        files = open(f, 'r').readlines()
-        for i in files:
-            if i.count(searchinfo):
-                result.write(i)
 
     for d, dirs, files in os.walk('.'):
         for f in files:
             if f.endswith(filetype):
                 searchdata(f)
-
-    closefile = open(fileresult + filetype)
-    closefile.close()
-
-    print (message_pars)
-
-    input = open((fileresult + filetype), 'r')
-    output = open((fileresult + "_nodubles" + filetype), 'w')
-    lines = input.readlines()
-    input.close()
-    seen = []
-    for line in lines:
-        if line not in seen:
-            seen.append(line)
-    output.writelines(seen)
-
-    print (message_duble)
-    sys.exit(0)
-
 else:
+    # проверка файла на существование
     try:
         file = open(filename + filetype)
     except IOError as e:
         print("Файла не существует!")
         sys.exit(0)
+    # Если файл существует продолжаем выполнение
     else:
         with file:
-
             print ("Ищем по файлу" + " " + filename + filetype)
-
-    def searchdata(f):
-        result = open((fileresult + filetype), 'a')
-        files = open(f, 'r').readlines()
-        for i in files:
-            if i.count(searchinfo):
-                    result.write(i)
 
     for d, dirs, files in os.walk('.'):
         for f in files:
-            if f.endswith(filename + '.txt'):
+            if f.endswith(filename + filetype):
                 searchdata(f)
 
-    closefile = open(fileresult + filetype)
-    closefile.close()
+#Отпускаем файл
+closefile = open(fileresult + filetype)
+closefile.close()
 
-    print (message_pars)
+print (message_pars)
 
-    input = open((fileresult + filetype), 'r')
-    output = open((fileresult + "_nodubles" + filetype), 'w')
-    linesarraу = input.readlines()
-    input.close()
-    seen = []
-    for line in linesarraу:
-        if line not in seen:
-            seen.append(line)
-    output.writelines(seen)
+# Удаляем дубликаты после парсинга данных
+input = open((fileresult + filetype), 'r')
+output = open((fileresult + "_nodubles" + filetype), 'w')
+lines = input.readlines()
+input.close()
+seen = []
+for line in lines:
+    if line not in seen:
+        seen.append(line)
+output.writelines(seen)
 
-    print (message_duble)
-    sys.exit(0)
+print (message_duble)
+sys.exit(0)
